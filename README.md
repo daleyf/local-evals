@@ -1,115 +1,48 @@
-# 🧪 Build Your Own Evals for Local LLMs
+# Local LLM Evals
 
-Test and benchmark **any** local large language model (LLM) with your own datasets.  
-Easily compare models, track results over time, and design custom evaluation pipelines.
+A tiny toolkit for running quick evaluations on local language models.  It trades
+fancy features for simplicity so you can benchmark models on a laptop with just a
+few commands.
 
----
-
-## 🚀 Features
-- **Plug & play model testing** — works with `Ollama`, `transformers`, `llama.cpp`, or any local model API.
-- **Custom datasets** — add your own `.jsonl` or `.csv` files for evaluation.
-- **Example tests included** — start with built-in QA, summarization, and reasoning evals.
-- **Simple metrics** — accuracy, BLEU, ROUGE, and custom scoring hooks.
-- **Repeatable results** — same tests, different models, comparable outputs.
-
----
-
-## 📦 Installation
+## Install
 
 ```bash
-git clone https://github.com/yourname/local-llm-evals.git
-cd local-llm-evals
 pip install -r requirements.txt
-🗂 Project Structure
-perl
-Copy
-Edit
-local-llm-evals/
-├── datasets/          # Example datasets (JSONL, CSV)
-├── tests/             # Example test scripts
-├── results/           # Saved run outputs + metrics
-├── evals/             # Core evaluation functions
-├── config.yaml        # Config for model + dataset selection
-└── README.md
-⚡ Quick Start
-Run a test with the default dataset and model:
+```
 
-bash
-Copy
-Edit
-python run_eval.py --model ollama:llama3 --dataset datasets/simple_qa.jsonl
-Example Output:
+To evaluate real models you also need a backend.  This project currently
+supports [Ollama](https://ollama.ai/) via its local HTTP API.  Install and run
+Ollama separately if you want to test actual models.
 
-yaml
-Copy
-Edit
-Model: llama3 (Ollama)
-Dataset: simple_qa
-Accuracy: 83%
-Avg Latency: 1.8s
-🧩 Adding Your Own Dataset
-Create a .jsonl file in datasets/:
+## Usage
 
-json
-Copy
-Edit
+```bash
+python run_eval.py --model echo --dataset datasets/simple_qa.jsonl
+```
+
+`--model` selects the backend:
+
+* `echo` – returns the prompt unchanged (useful for testing the pipeline).
+* `ollama:MODEL` – queries an Ollama model like `ollama:llama2`.
+
+Results show simple accuracy and average latency.  Use `--save results.json`
+to keep raw outputs.
+
+## Adding Datasets
+
+Datasets are newline‑delimited JSON files with at least a `prompt` field and an
+optional `expected` field used for scoring.
+
+```jsonl
 {"prompt": "What is the capital of France?", "expected": "Paris"}
 {"prompt": "2 + 2 =", "expected": "4"}
-Run:
+```
 
-bash
-Copy
-Edit
-python run_eval.py --model ollama:mistral --dataset datasets/my_dataset.jsonl
-🔬 Example Tests
-We include a few out of the box:
+Drop new files into the `datasets/` folder and reference them with
+`--dataset path/to/file.jsonl`.
 
-simple_qa.jsonl — Basic factual recall.
+## Why so minimal?
 
-math_reasoning.jsonl — Step-by-step math reasoning.
-
-summarization.jsonl — Text summarization scoring.
-
-📊 Metrics
-By default, we compute:
-
-Exact Match for QA
-
-String Similarity (Levenshtein)
-
-ROUGE / BLEU for summarization
-
-You can add your own metrics in evals/metrics.py.
-
-🔌 Supported Backends
-Ollama
-
-HuggingFace transformers (with AutoModelForCausalLM)
-
-llama.cpp
-
-Any custom API endpoint
-
-Switch models via:
-
-bash
-Copy
-Edit
-python run_eval.py --model transformers:meta-llama/Llama-2-7b-chat-hf
-📅 Roadmap
- Add multi-turn conversation evals
-
- Add leaderboard-style web UI
-
- Add noise injection / robustness tests
-
-🤝 Contributing
-Pull requests welcome!
-
-Fork it
-
-Create your feature branch
-
-Submit a PR
-
-
+The goal is to make running local model checks easy, even on a MacBook.
+The code favours readability over raw performance and keeps dependencies light.
+Feel free to extend it for your own experiments!
